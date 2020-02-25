@@ -1,0 +1,9 @@
+---
+# tasks file for app
+- name: Running docker with reddit microservice
+  docker_container:
+    name: reddit
+    state: started
+    image: sfrost1988/otus-reddit:1.0
+    ports:
+      - "9292:9292"

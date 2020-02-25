@@ -1,0 +1,6 @@
+---
+- name: Running reddit microservice on server
+  hosts: all
+  become: true
+  roles:
+    - app

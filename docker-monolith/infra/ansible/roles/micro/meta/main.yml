@@ -1,0 +1,12 @@
+galaxy_info:
+  author: Sergey Kurbatov
+  description: Install Docker for launch microservice in server on GCP
+  company: NoCompany
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags: []
+dependencies: []

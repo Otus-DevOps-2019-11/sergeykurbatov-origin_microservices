@@ -1,0 +1,6 @@
+project          = "docker-268618"
+public_key_path  = "~/.ssh/appuser.pub"
+disk_image       = "reddit-micro-base"
+private_key      = "~/.ssh/appuser"
+app_name         = "reddit-app"
+install_app      = true

@@ -1,0 +1,39 @@
+dist: trusty
+sudo: required
+language: bash
+before_install:
+- curl https://raw.githubusercontent.com/express42/otus-homeworks/2019-11/run.sh | bash
+
+#install:
+#  - sudo pip install -r ansible/requirements.txt
+#  - sudo curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && sudo cp tflint /usr/sbin
+#  - sudo pip install ansible-lint
+#  - wget https://releases.hashicorp.com/terraform/0.12.19/terraform_0.12.19_linux_amd64.zip -O /tmp/terraform.zip
+#  - sudo unzip -d /usr/local/bin/ /tmp/terraform.zip
+#  - sudo pip install -r ansible/requirments.txt
+
+#script:
+#  - packer validate -var-file=packer/variables.json.example packer/app.json
+#  - packer validate -var-file=packer/variables.json.example packer/db.json
+#  - tflint terraform/stage
+#  - tflint terraform/prod
+#  - cd terraform/prod && terraform init -backend=false && terraform validate && cd ..
+#  - cd stage && terraform init -backend=false && terraform validate && cd ..
+#  - ansible-lint ansible/playbooks
+#  - ansible --version
+#  - ansible-lint --version
+#  - terraform --version
+#  - packer --version
+
+
+branches:
+  only:
+  - master
+  - docker-2
+
+notifications:
+  slack:
+    rooms:
+      secure:
+        a5JKOGIPJY3DMAXxIkeZ1iG28NHnf2oJh7N7RjdnDRzjW5vA+VXNCQgrjttjyitUv7hq3n/dXprfNbpRAQaGRc+Of+GQUjYcq4Cvf12NqkYfKKmTe5zGnc5AII29Af7ft+Jlk4i7pwZN/EA9A5LJ2ThIGutgpdAXq9K0mywuxr4WQSDZI6Y0jM6oKbLXM7GY7E9LiWkoWo9961pVX9qF4mfsTd6rxpewl3zg3z13vr06tKnOKhOuTRFkoJdX7lHClC/Imawfm6ppwO44Lq+ak5cA/5mTU7FsxLEVBRENePyE90GFakp2QWj96p8OSvvn7Q2g4OG6qqeKjPWr13ogR9b2p3nQs3V6DJ7fKrqwLnSXvq9Q31gfhJINZi4MlPpwdQSgvTAlGUAXMXHH5AE2Zt7jqL4wiSiwf4N6F8qTkxrRQyBfbm0+igoLawfRY2Gq/KgItdGErfxLfk5EDdWy4Ubj/1JGEmKMe9yY9dvqdWnhJEKFYa6x8SJb5xuvQ9KKYJqMsEvLpVCVSN4O8w7vKS1+A7MUaA3DWIyOJNVd/y9V1Nr5IoR1WssJgd07CdL2dyq3i//hs9suRIx1wK7nvzhp2aa7XEeF3KTnUHTO+SEsxiDo1VyFXj3oOVfX9Tlbo/5RusJC/JBood0GEH6fIVzUG0rzsUJ1bVf+9XkfBqE=
+#test

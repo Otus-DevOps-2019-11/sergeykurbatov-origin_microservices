@@ -1,0 +1,6 @@
+---
+- name: pre-install app for microservice server
+  hosts: all
+  become: true
+  roles:
+    - micro
