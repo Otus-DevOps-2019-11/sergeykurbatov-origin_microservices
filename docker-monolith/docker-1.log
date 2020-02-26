@@ -1,0 +1,7 @@
+REPOSITORY                  TAG                 IMAGE ID            CREATED              SIZE
+skurbatov/ubuntu-tmp-file   latest              9a756045e8e7        About a minute ago   124MB
+ubuntu                      16.04               96da9143fb18        4 weeks ago          124MB
+hello-world                 latest              fce289e99eb9        13 months ago        1.84kB
+
+docker image - Это общий вид слоев, доступны для чтения. Изменения вносятся в верхнем слое стека слоев.
+docker container - Это общий вид слоев, доступны для записи. Контейнервершине определяет лишь слой записи в верхней части образа.

@@ -1,0 +1,26 @@
+{
+    "builders": [
+        {
+            "type": "googlecompute",
+            "project_id": "{{user `gcp_proj_id`}}",
+            "image_name": "reddit-micro-{{timestamp}}",
+            "image_family": "reddit-micro-base",
+            "source_image_family": "{{user `gcp_source_image`}}",
+            "zone": "europe-west1-b",
+            "ssh_username": "appuser",
+            "machine_type": "{{user `gcp_m_type`}}",
+            "image_description": "Reddit image for immutable infrastructure MICROSERVICE",
+            "disk_type": "pd-standard",
+            "disk_size": "10",
+            "network": "default",
+            "tags": "reddit-micro"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "ansible",
+            "playbook_file": "ansible/playbooks/packer_micro.yml",
+            "ansible_env_vars": ["ANSIBLE_ROLES_PATH={{ pwd }}/ansible/roles"]
+        }
+    ]
+}
