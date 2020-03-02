@@ -1,0 +1,39 @@
+version: '3.3'
+services:
+  post_db:
+    image: mongo:${DBVERSION}
+    volumes:
+      - post_db:/data/db
+    networks:
+      - back_net
+  ui:
+    image: ${USERNAME}/ui:${UIVERSION}
+    command: puma --debug -w 2
+    volumes:
+      - ui_app:/app
+    ports: 
+      - ${UIextPORT}:${UIintPORT}/tcp
+    networks:
+      - front_net
+  post:
+    image: ${USERNAME}/post:${POSTVERSION}
+    volumes:
+      - post_app:/app
+    networks:
+      - back_net
+      - front_net
+  comment:
+    image: ${USERNAME}/comment:${COMMENTVERSION}
+    volumes:
+      - comment_app:/app
+    networks:
+      - back_net
+      - front_net
+volumes:
+  post_db:
+  post_app:
+  comment_app:
+  ui_app:
+networks:
+  front_net:
+  back_net:
