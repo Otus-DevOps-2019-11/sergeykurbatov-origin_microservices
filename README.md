@@ -39,3 +39,24 @@ docker run -d --network=reddit --network-alias=post sfrost1988/post:1.0
 docker run -d --network=reddit --network-alias=comment sfrost1988/comment:3.0
 docker run -d --network=reddit -p 9292:9292 sfrost1988/ui:3.0
 ```
+
+# Homework 14
+
+Базовое имя проекта берется из имени папки в которой расположен проект. Его можно переопределить ключем `--project-name <name>`
+Проведена работа с сетями контейнеров, разбиение контейнеров по разным сетям и подключение контейнеров к существующим сетям.
+Создан `src/docker-compose.yml` для описания запуска всех контейнеров и их зависимостей.
+Параметризованы многие из значений в `src/docker-compose.yml` и вынесены, как пример, в отдельный файл `src/.env.example`
+Контейнеры распределены и подключены к разным сетям, это описано в `src/docker-compose.yml`
+Описан запуск контейнеров без сборки образов, подключение к различным сетям, параметризацией данных и подключения `volumes` для сохранения изменений при выключении, перезапуске и переноса контейнеров.
+
+Для запуска контейнеров в ручном режиме по разным сетям выполните - 
+```
+cd src/
+docker run -d --network=back_net --name mongo_db --network-alias=post_db --network-alias=comment_db mongo:latest
+docker run -d --network=back_net --network=front_net --network-alias=post --name post sfrost1988/post:1.0 
+docker run -d --network=back_net --network=front_net --network-alias=comment --name comment sfrost1988/comment:3.0
+docker run -d --network=front_net -p 9292:9292 --name ui sfrost1988/ui:3.0
+```
+Для запуска через docker-compose выполните - `cd src/ && docker-compose up -d`. Незабудьте использовать `.env` файл, его пример приведен в `src/.env.example`
+Для запуска через docker-compose без выполнения сборки образов + подключение `volumes` выполните - `cd src/ && docker-compose -f docker-compose.override.yml --project-name sfrost up -d`
+Для выключения выполните команду - `cd src/ && docker-compose -f docker-compose.override.yml --project-name sfrost down`
