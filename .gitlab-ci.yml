@@ -18,11 +18,11 @@ build_job:
   script:
     - echo "Building docker"
     - cd $homedir
-    - sudo docker login -u $DOCKER_LOGIN -p "C6K!5d==ev.$)c]F"
+    - docker login -u $DOCKER_LOGIN -p "C6K!5d==ev.$)c]F"
     - cd docker-monolith
-    - sudo docker build -t reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID .
-    - sudo docker tag reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID $DOCKER_LOGIN/gitlab-reddit:3.0
-    - sudo docker push $DOCKER_LOGIN/gitlab-reddit:3.0
+    - docker build -t reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID .
+    - docker tag reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID $DOCKER_LOGIN/gitlab-reddit:3.0
+    - docker push $DOCKER_LOGIN/gitlab-reddit:3.0
 test_unit_job:
   before_script:
     - export homedir=$(pwd)
@@ -46,7 +46,7 @@ deploy_dev_job:
     name: dev
     url: http://dev.example.com
 branch review:
-  image: docker:latest
+  image: docker:18.09.7
   stage: review
   script:
     - echo 'Deploy docker'
