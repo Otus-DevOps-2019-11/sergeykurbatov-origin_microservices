@@ -1,4 +1,5 @@
-image: ruby:2.4.2
+#image: ruby:2.4.2
+image: docker:19.03.1
 stages:
   - build
   - test
@@ -11,10 +12,11 @@ variables:
 before_script:
   - cd reddit
 build_job:
-  image: docker:18.09.7
+  #image: docker:18.09.7
   stage: build
   services:
-    - docker:18.09.7-dind
+    #- docker:18.09.7-dind
+    - docker:19.03.1-dind
   script:
     - docker info
     - docker build -t reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID .
@@ -42,7 +44,8 @@ deploy_dev_job:
     name: dev
     url: http://dev.example.com
 branch review:
-  image: docker:18.09.7
+  #image: docker:18.09.7
+  image: docker:19.03
   stage: review
   script:
     - echo "Branch review"
