@@ -17,7 +17,7 @@ build_job:
   script:
     - echo "Building docker"
     - cd $homedir
-    - docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
+    - docker login -u $DOCKER_LOGIN -p "C6K!5d==ev.$)c]F"
     - cd docker-monolith
     - docker build -t reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID .
     - docker tag reddit-$CI_COMMIT_REF_NAME:$CI_PIPELINE_IID $DOCKER_LOGIN/gitlab-reddit:3.0
