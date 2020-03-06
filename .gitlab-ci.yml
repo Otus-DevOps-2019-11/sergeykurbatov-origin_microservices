@@ -7,7 +7,6 @@ stages:
   - production
 variables:
   DATABASE_URL: 'mongodb://mongo/user_posts'
-  DOCKER_DRIVER: overlay2
 before_script:
   - export homedir=$(pwd)
 build_job:
@@ -46,7 +45,6 @@ deploy_dev_job:
     name: dev
     url: http://dev.example.com
 branch review:
-  image: docker:18.09.7
   stage: review
   script:
     - echo 'Deploy docker'
