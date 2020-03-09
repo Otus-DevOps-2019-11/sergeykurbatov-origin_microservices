@@ -4,6 +4,7 @@ stages:
   - build
   - test
 #  - review
+  - deploy
   - stage
   - production
 variables:
