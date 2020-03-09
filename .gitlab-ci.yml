@@ -17,7 +17,7 @@ variables:
 #  - bundle install
 build_job:
   services:
-    - name: docker:19.03.1-dind
+    - name: docker:18.09.7-dind
       entrypoint: ["env", "-u", "DOCKER_HOST"]
       command: ["dockerd-entrypoint.sh"]
   stage: build
