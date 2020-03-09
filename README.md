@@ -60,3 +60,7 @@ docker run -d --network=front_net -p 9292:9292 --name ui sfrost1988/ui:3.0
 Для запуска через docker-compose выполните - `cd src/ && docker-compose up -d`. Незабудьте использовать `.env` файл, его пример приведен в `src/.env.example`
 Для запуска через docker-compose без выполнения сборки образов + подключение `volumes` выполните - `cd src/ && docker-compose -f docker-compose.override.yml --project-name sfrost up -d`
 Для выключения выполните команду - `cd src/ && docker-compose -f docker-compose.override.yml --project-name sfrost down`
+
+# Homework 15
+
+Slack channel для проверки оповещений - https://app.slack.com/client/T6HR0TUP3/CRVKNU9DL
