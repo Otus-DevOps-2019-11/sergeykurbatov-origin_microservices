@@ -64,3 +64,12 @@ docker run -d --network=front_net -p 9292:9292 --name ui sfrost1988/ui:3.0
 # Homework 15
 
 Slack channel для проверки оповещений - https://app.slack.com/client/T6HR0TUP3/CRVKNU9DL
+Установлен Gitlab сервер в контейнере.
+Настроен проект и отключена автоматическая регистрация пользователей.
+Создан файл `.gitlab-ci.yml` с различными тестами и автоматическими созданиями environments.
+Настроена интеграция с Slack через web hook, канал - https://app.slack.com/client/T6HR0TUP3/CRVKNU9DL
+Описан building контейнера приложения и заливка его в dockerhub + автотест с развертыванием контейнера.
+Столкнулся с проблемой при билде `ERROR: error during connect: Get http://docker:2375/v1.40/info: dial tcp: lookup docker on 169.254.169.254:53: no such host`, при использовании разных dind версий ситуация не меняется, но при локальном развертывании все работает.
+Для запуска gitlab в контейнере в дерриктории `gitlab-ci` создан файл `docker-compose.yml`
+
+Для запуска gitlab выполните `cd gitlab-ci && docker-compose up -d`
