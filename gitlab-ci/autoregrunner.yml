@@ -1,0 +1,43 @@
+- hosts: runners
+  user: appuser
+  become_method: sudo
+  vars:
+    TOKEN: 5ALyf5cgTy6zxnF38Lo8
+    URL: http://34.76.97.97/
+  tasks:
+    - name: download runner
+      shell: curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+      become: true
+
+    - name: change +x
+      file:
+        path: /usr/local/bin/gitlab-runner
+        mode: +x
+      become: true
+
+    - name: add user
+      user:
+        name: gitlab-runner
+        shell: /bin/bash
+      become: true
+
+    - name: install runner
+      shell: gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+      become: true
+
+    - name: start runner
+      shell: gitlab-runner start
+      become: true
+
+    - name: register runner
+      shell: gitlab-runner register \
+              --url {{ URL }} \
+              --registration-token {{ TOKEN }} \
+              --non-interactive \
+              --executor "shell" \
+              --description "shell-runner" \
+              --tag-list "auto,shell" \
+              --run-untagged="true" \
+              --locked="false" \
+              --access-level="not_protected"
+      become: true
