@@ -32,6 +32,7 @@ branches:
   - docker-2
   - docker-3
   - gitlab-ci-1
+  - monitoring-1
 
 notifications:
   slack:
