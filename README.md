@@ -73,3 +73,27 @@ Slack channel для проверки оповещений - https://app.slack.c
 Для запуска gitlab в контейнере в дерриктории `gitlab-ci` создан файл `docker-compose.yml`
 
 Для запуска gitlab выполните `cd gitlab-ci && docker-compose up -d`
+
+# Homework 16
+
+Dockerhub repository with PUMA UI - https://hub.docker.com/repository/docker/sfrost1988/ui
+Dockerhub repository with PUMA POST - https://hub.docker.com/repository/docker/sfrost1988/post
+Dockerhub repository with PUMA COMMENT - https://hub.docker.com/repository/docker/sfrost1988/comment
+Dockerhub repository with prometheus service for monitoring microservices - https://hub.docker.com/repository/docker/sfrost1988/prometheus
+Dockerhub repository with google cloudprober service for blackbox monitoring - https://hub.docker.com/repository/docker/sfrost1988/cloudprober
+
+Создан `Dockerfile` в дерриктории `monitoring\prometheus` для создания докер образа сервиса мониторинга Prometheus.
+Создан `prometheus.yml` конфигурационный файл для настройки службы мониторинга. В нем описаны параметры мониторинга сервисов.
+Описан запуск всех сервисов в контейнерах с помощью файла `docker-compose.yml` в дерриктории `docker`
+Описан запуск сервиса `node-exporter` для мониторинга состояния `docker-host`
+Описан запуск сервиса `bitnami/mongodb-exporter` для мониторинга состояния `mongodb`
+Описано создание и запуск контейнера с сервисом `cloudprober` для мониторинга сервисов с помощью blackbox. Состояние сервисов можно отследить с помощью графика и лога `total` в prometheus
+Создан Makefile для автоматического создания контейнеров и заливки их на dockerhub.
+
+Для запуска сборки контейнеров выполните: `make build-all`
+Для заливки контейнеров в dockerhub выполните: `make push-all`
+Для выполнения операций выше выполните: `make docker-all`
+Для запуска инфраструктуры на контейнерах, при условии подключенного docker-host, выполните: `make run-infra`
+Для отключения инфраструктуры на контейнерах, при условии подключенного docker-host, выполните: `make down-infra`
+Для вывода ip-адреса docker-host, выполните: `make docker-ip`
+Для вывода справки по командам, выполните: `make` или `make help`
