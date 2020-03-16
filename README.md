@@ -97,3 +97,43 @@ Dockerhub repository with google cloudprober service for blackbox monitoring - h
 Для отключения инфраструктуры на контейнерах, при условии подключенного docker-host, выполните: `make down-infra`
 Для вывода ip-адреса docker-host, выполните: `make docker-ip`
 Для вывода справки по командам, выполните: `make` или `make help`
+
+# Homework 17
+
+Dockerhub repository with PUMA UI - https://hub.docker.com/repository/docker/sfrost1988/ui
+Dockerhub repository with PUMA POST - https://hub.docker.com/repository/docker/sfrost1988/post
+Dockerhub repository with PUMA COMMENT - https://hub.docker.com/repository/docker/sfrost1988/comment
+Dockerhub repository with prometheus service for monitoring microservices - https://hub.docker.com/repository/docker/sfrost1988/prometheus
+Dockerhub repository with google cloudprober service for blackbox monitoring - https://hub.docker.com/repository/docker/sfrost1988/cloudprober
+Dockerhub repository with alertmanager service for alerting about incendent with infra - https://hub.docker.com/repository/docker/sfrost1988/alertmanager
+
+Разделены инфрастурктурный docker-compose файл (`docker/docker-compose.yml`) и для мониторинга (`docker/docker-compose-monitoring.yml`).
+Добавлен сервис мониторинга контейнеров cAdvisor.
+Добавлен сервис мониторинга контейнеров и построения графиков Grafana.
+В Grafana установлен dashboarb для мониторинга docker контейнеров `monitoring\grafana\dashboards\DockerMonitoring.json`.
+В Prometheus добавлен мониторинг сервиса `post`.
+В Grafana создан dashboard для мониторинга UI сервиса и запросов к нему `monitoring\grafana\dashboards\UI_Service_Monitoring.json`.
+В Grafana создан dashboard для мониторинга бизнес метрик `monitoring\grafana\dashboards\Business_Logic_Monitoring.json`.
+Добавлен сервис оповещения об инцендентах с инфраструктурой Alermanager.
+В docker-host включен эсперементальный режим общения docker контейнеров и сервиса мониторинга Prometheus в `/etc/docker/daemon.json`
+```
+{
+  "metrics-addr" : "0.0.0.0:9323",
+  "experimental" : true
+}
+```
+Для работы с метриками docker в експерементальном режиме в Grafana добавлен dashboard `monitoring\grafana\dashboards\docker-engine-metrics_rev3.json`. Количество метрик значительно ниже, чем при использовании cAdvisor и они в большей степени направлены на мониторинг docker-host и его параметров с небольшой статистикой по docker контейнерам.
+Добавлен сервис мониторинга и хранения данных о состоянии контейнеров influxDB и telegraf.
+Для работы с метриками docker с использованием influxdb и telegraf в Grafana добавлен dashboard `monitoring\grafana\dashboards\telegraf-system-dashboard_rev4.json`. Количество метрик сопоставимо с метриками cAdvisor но дополнительно ставится база данных, что усложняет конфигурирование.
+Добавлен alert в prometheues, что если в случае большого времени отклика одного из сервисов, будет отправлено оповещение в slack и на почту (преведены фейковые данные).
+Добавлен собственный контейнер с Grafana и автоматическим добавлением данных о дашбордах и сервисов данных.
+Добавлен сервис сбора метрик stackdriver. Но метрики приложения и бизнеса придумать не удалось.
+Добавлен сервис Autoheal для перезагрузки и исправления ситуации с контейнерами, но пока не могу представить проблем, которые бы не решались healthcheack'ами без доп контейнера или опцией авторестартом контейнеров.
+
+
+Подключиться к инфраструктуре можно следующим образом:
+- Web интерфейс приложения - http://<docke-host_ip>:9292
+- Web интерфейс Prometheus - http://<docke-host_ip>:9090
+- Web интерфейс cAdvisor - http://<docke-host_ip>:8080
+- Web интерфейс Grafana - http://<docke-host_ip>:3000
+- Web интерфейс Alermanager - http://<docke-host_ip>:9093
