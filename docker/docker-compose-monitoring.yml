@@ -1,0 +1,137 @@
+version: '3.3'
+services:
+  prometheus:
+    image: ${USERNAME}/prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=1d'
+    networks:
+      - back_net
+      - prometheus_net
+  node-exporter:
+    image: prom/node-exporter:v0.15.2
+    user: root
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    networks:
+      - prometheus_net
+  mongodb-exporter:
+    image: bitnami/mongodb-exporter:0.10.0
+    networks:
+      - prometheus_net
+      - back_net
+    environment:
+      MONGODB_URI: "mongodb://post_db:27017"
+  cloudprober-exporter:
+    image: ${USERNAME}/cloudprober
+    networks:
+      - prometheus_net
+      - back_net
+      - front_net
+  cadvisor:
+    image: google/cadvisor:v0.29.0
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:rw'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    ports:
+      - '8080:8080'
+    networks:
+      - prometheus_net
+  grafana:
+    image: ${USERNAME}/grafana
+    healthcheck:
+      test: "curl -f http://localhost:3000/api/health || exit 1"
+      interval: 5s
+      retries: 2
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=1qaz2wsx!
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    networks:
+      - prometheus_net
+  alertmanager:
+    image: ${USERNAME}/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+    ports:
+      - 9093:9093
+    networks:
+      - prometheus_net
+  telegraf:
+    image: ${USERNAME}/telegraf
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - prometheus_net
+  influxdb:
+    image: influxdb
+    volumes:
+      - 'influxdb_data:/var/lib/influxdb'
+    networks:
+      - prometheus_net
+  stackdriver:
+    image: ${USERNAME}/stackdriver
+    environment:
+#      - GOOGLE_APPLICATION_CREDENTIALS=/var/gcp-cred/stackdriver.json
+      - STACKDRIVER_EXPORTER_GOOGLE_PROJECT_ID=docker-268618
+      - STACKDRIVER_EXPORTER_MONITORING_METRICS_TYPE_PREFIXES=compute.googleapis.com/instance/cpu,compute.googleapis.com/instance/disk
+#    volumes:
+#      - /var/gcp-cred:/var/gcp-cred
+    ports:
+      - 9255:9255
+    networks:
+      - prometheus_net
+      - front_net
+      - back_net
+  trickster:
+    image: ${USERNAME}/trickster
+    volumes:
+      - ./trickster:/etc/trickster/trickster
+    networks:
+      - front_net
+      - prometheus_net
+    depends_on:
+      - prometheus
+    ports:
+      - 9089:9089
+  autoheal:
+    image: ${USERNAME}/autoheal
+    container_name: autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+      - AUTOHEAL_INTERVAL=5
+      - AUTOHEAL_START_PERIOD=5
+      - AUTOHEAL_DEFAULT_STOP_TIMEOUT=10
+      - CURL_TIMEOUT=30
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - prometheus_net
+      - front_net
+      - back_net
+volumes:
+  prometheus_data:
+  grafana_data:
+  influxdb_data:
+networks:
+  prometheus_net:
+  front_net:
+  back_net:
