@@ -1,17 +1,60 @@
 version: '3'
 services:
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      front_net:
+        aliases:
+          - zipkin
+      back_net:
+        aliases:
+          - zipkin
   fluentd:
     image: ${USERNAME}/fluentd
     ports:
       - "24224:24224"
       - "24224:24224/udp"
+    networks:
+      front_net:
+        aliases:
+          - fluentd
+      back_net:
+        aliases:
+          - fluentd
   elasticsearch:
     image: elasticsearch:7.4.0
+    environment:
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
     expose:
       - 9200
     ports:
       - "9200:9200"
+    networks:
+      front_net:
+        aliases:
+          - elasticsearch
+      back_net:
+        aliases:
+          - elasticsearch
+    healthcheck:
+      test: curl -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
   kibana:
     image: kibana:7.4.0
     ports:
       - "5601:5601"
+    networks:
+      front_net:
+        aliases:
+          - kibana
+      back_net:
+        aliases:
+          - kibana
+networks:
+  front_net:
+  back_net:
