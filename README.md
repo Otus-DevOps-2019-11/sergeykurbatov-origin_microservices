@@ -137,3 +137,32 @@ Dockerhub repository with alertmanager service for alerting about incendent with
 - Web интерфейс cAdvisor - http://<docke-host_ip>:8080
 - Web интерфейс Grafana - http://<docke-host_ip>:3000
 - Web интерфейс Alermanager - http://<docke-host_ip>:9093
+
+# Homework 18
+
+Установлен код измененного приложения.
+Создан и настроен контейнер fluentd для сбора лог сообщений и пересылки их в контейнер с Elasticsearch.
+Настроено развертывания контейнера Elasticsearch и Kibana для сбора логов и отображения в графическом виде.
+Настроен сбор лог сообщений с сервисов post и ui с использованием fluentd.
+Рассмотрено отображение лог сообщений в elasticsearch и kibana.
+Настроен парсинг лог сообщений с использованием конфигурации fluentd при помощи json формата отображения логов, grok патернов и регулярных выражений.
+Рассмотрен вариант отслеживания проблем и задержек в web приложении с использование zipkin.
+В задании со * была анализирована причина некоректного работа микросервиса post. С применением инструмента Zipkin и git diff была найдена ошибка (по моему мнению) в коде создающая проблему в задержки открытия поста на портале. При запросе записи в БД процесс засыпал на 3 секунды. Найденная фукнция `time.sleep(3)` в коде:
+```
+...
+        stop_time = time.time()  # + 0.3
+        resp_time = stop_time - start_time
+        app.post_read_db_seconds.observe(resp_time)
+        time.sleep(3)
+        log_event('info', 'post_find',
+                  'Successfully found the post information',
+                  {'post_id': id})
+        return dumps(post)
+...
+```
+
+Подключиться к инфраструктуре можно следующим образом:
+- Web интерфейс приложения - http://<docke-host_ip>:9292
+- Web интерфейс kibana - http://<docke-host_ip>:5601
+- Web интерфейс zipkin - http://<docke-host_ip>:9411
+- Web интерфейс elasticsearch - http://<docke-host_ip>:9200

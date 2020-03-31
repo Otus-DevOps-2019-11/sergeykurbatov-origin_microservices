@@ -28,6 +28,12 @@ docker-all: ui comment post prometheus cloudprober alertmanager telegraf grafana
 
 build-all: ui comment post prometheus cloudprober alertmanager telegraf grafana stackdriver trickster autoheal
 
+build-app: ui comment post
+
+build-mon: prometheus cloudprober alertmanager telegraf grafana stackdriver trickster autoheal
+
+build-logging: fluentd
+
 push-all: ui-push comment-push post-push prometheus-push cloudprober-push alertmanager-push grafana-push stackdriver-push trickster-push autoheal-push
 
 docker-machine: create_docker-machine docker-env docker-eval
@@ -58,6 +64,12 @@ run-mon:
 
 down-mon:
 	cd docker && docker-compose -f docker-compose-monitoring.yml down
+
+run-logging:
+	cd docker && docker-compose -f docker-compose-logging.yml up -d
+
+down-logging:
+	cd docker && docker-compose -f docker-compose-logging.yml down
 
 run-infra: run-app run-mon
 
@@ -100,6 +112,9 @@ trickster:
 autoheal:
 	cd monitoring/autoheal && docker build -t ${DOCKERHUB}/autoheal .
 
+fluentd:
+	cd logging/fluentd && docker build -t ${DOCKERHUB}/fluentd .
+
 ui-push:
 	docker push ${DOCKERHUB}/ui:latest
 
@@ -129,3 +144,6 @@ trickster-push:
 
 autoheal-push:
 	docker push ${DOCKERHUB}/autoheal:latest
+
+fluentd-push:
+	docker push ${DOCKERHUB}/fluentd:latest
