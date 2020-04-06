@@ -34,6 +34,7 @@ branches:
   - gitlab-ci-1
   - monitoring-1
   - monitoring-2
+  - kubernetes-1
 
 notifications:
   slack:

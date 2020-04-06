@@ -29,8 +29,13 @@ phase03: create_kub-net create_kub-firewall-rule create_kub-ip create_kub-contro
 phase04: generate_kub-certs copy_kub-all-certs
 phase05: env_kub-ip generate_kub-all-configs copy_kub-all-configs
 phase06: generate_kub-enc-key create_kub-enc-configs copy_kub-enc-configs
-#phase07: env_kub-int-gcp-ip env_kub-hostname
 phase08: create_kub-loadbalancer verification_kub-loadbalancer verification_kub-loadbalancer2
+phase10: generate_kub-admin-config-file verification_kub-health
+phase11: show_kub-routing-tables create_kub-routings show_kub-routes
+phase12: deploymennt_kub-dns
+phase13: smoketest_kub deploymennt_kub port-forwarding_kub logs_kub exec_kub expose_kub-service
+delete_kub: delete_kub-controllers delete_kub-workers delete_kub-networks delete_kub-firewalls delete_kub-vpc
+run_kub: create_kub-net create_kub-firewall-rule create_kub-ip create_kub-controllers create_kub-workers
 
 create_kub-net:
 	gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom && \
@@ -111,7 +116,10 @@ verification_kub-loadbalancer:
 		--format 'value(address)')
 
 verification_kub-loadbalancer2:
-	curl --cacert certs/ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
+	curl --cacert certs/ca.pem https://$${KUBERNETES_PUBLIC_ADDRESS}:6443/version
+
+verification_kub-health:
+	kubectl get componentstatuses && kubectl get nodes
 
 generate_kub-certs: generate_kub-ca-certs generate_kub-admin-certs generate_kub-client-certs generate_kub-controllers-certs generate_kub-proxy-certs generate_kub-sched-certs generate_kub-api-certs generate_kub-service-acc-certs
 
@@ -231,6 +239,22 @@ generate_kub-admin-configs:
 generate_kub-enc-key:
 	ENCRYPTION_KEY=$$(head -c 32 /dev/urandom | base64)
 
+generate_kub-admin-config-file:
+	KUBERNETES_PUBLIC_ADDRESS=$$(gcloud compute addresses describe kubernetes-the-hard-way \
+		--region $$(gcloud config get-value compute/region) \
+		--format 'value(address)') ; \
+  	kubectl config set-cluster kubernetes-the-hard-way \
+		--certificate-authority=certs/ca.pem \
+		--embed-certs=true \
+		--server=https://$${KUBERNETES_PUBLIC_ADDRESS}:6443 ; \
+	kubectl config set-credentials admin \
+		--client-certificate=certs/admin.pem \
+		--client-key=certs/admin-key.pem ; \
+    kubectl config set-context kubernetes-the-hard-way \
+		--cluster=kubernetes-the-hard-way \
+		--user=admin ; \
+    kubectl config use-context kubernetes-the-hard-way
+
 copy_kub-all-configs: copy_kub-workers-configs copy_kub-controllers-configs
 
 copy_kub-workers-configs:
@@ -271,6 +295,28 @@ delete_kub-workers:
 		gcloud compute instances delete worker-$${inst} ; \
 	done
 
+delete_kub-networks:
+	gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule \
+		--region $$(gcloud config get-value compute/region) ; \
+  	gcloud -q compute target-pools delete kubernetes-target-pool ; \
+	gcloud -q compute http-health-checks delete kubernetes ; \
+  	gcloud -q compute addresses delete kubernetes-the-hard-way
+
+delete_kub-firewalls:
+	gcloud -q compute firewall-rules delete \
+		kubernetes-the-hard-way-allow-nginx-service \
+		kubernetes-the-hard-way-allow-internal \
+		kubernetes-the-hard-way-allow-external \
+		kubernetes-the-hard-way-allow-health-check
+
+delete_kub-vpc:
+	gcloud -q compute routes delete \
+		kubernetes-route-10-200-0-0-24 \
+		kubernetes-route-10-200-1-0-24 \
+		kubernetes-route-10-200-2-0-24 ; \
+  	gcloud -q compute networks subnets delete kubernetes ; \
+  	gcloud -q compute networks delete kubernetes-the-hard-way
+
 show_kub-ip:
 	gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
 
@@ -288,6 +334,23 @@ env_kub-hostname:
 
 show_kub-instances:
 	gcloud compute instances list
+
+show_kub-routing-tables:
+	for instance in worker-0 worker-1 worker-2; do \
+		gcloud compute instances describe $${instance} \
+			--format 'value[separator=" "](networkInterfaces[0].networkIP,metadata.items[0].value)' ; \
+	done
+
+show_kub-routes:
+	gcloud compute routes list --filter "network: kubernetes-the-hard-way"
+
+create_kub-routings:
+	for i in 0 1 2; do \
+		gcloud compute routes create kubernetes-route-10-200-$${i}-0-24 \
+			--network kubernetes-the-hard-way \
+			--next-hop-address 10.240.0.2$${i} \
+			--destination-range 10.200.$${i}.0/24 ; \
+	done
 
 connect_kub-cont0:
 	gcloud compute ssh controller-0
@@ -309,3 +372,43 @@ connect_kub-work2:
 
 create_kub-enc-configs:
 	sh create-kub-enc-configs.sh
+
+smoketest_kub-print:
+	gcloud compute ssh controller-0 \
+		--command "sudo ETCDCTL_API=3 etcdctl get \
+		--endpoints=https://127.0.0.1:2379 \
+		--cacert=/etc/etcd/ca.pem \
+		--cert=/etc/etcd/kubernetes.pem \
+		--key=/etc/etcd/kubernetes-key.pem\
+		/registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+
+deploymennt_kub:
+	kubectl create deployment nginx --image=nginx && kubectl get pods -l app=nginx
+
+deploymennt_kub-dns:
+	kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns.yaml ; \
+	kubectl get pods -l k8s-app=kube-dns -n kube-system ; \
+	kubectl run --generator=run-pod/v1 busybox --image=busybox:1.28 --command -- sleep 3600 ; \
+	kubectl get pods -l run=busybox ; \
+	POD_NAME=$$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}") ; \
+	kubectl exec -ti $$POD_NAME -- nslookup kubernetes
+
+port-forwarding_kub:
+	kubectl port-forward $$(kubectl get pods -l app=nginx -o jsonpath="{.items[0].metadata.name}") 8080:80 && curl --head http://127.0.0.1:8080
+
+logs_kub:
+	kubectl logs $$(kubectl get pods -l app=nginx -o jsonpath="{.items[0].metadata.name}")
+
+exec_kub: 
+	kubectl exec -ti $$(kubectl get pods -l app=nginx -o jsonpath="{.items[0].metadata.name}") -- nginx -v
+
+expose_kub-service:
+	kubectl expose deployment nginx --port 80 --type NodePort ; \
+	NODE_PORT=$$(kubectl get svc nginx \
+  		--output=jsonpath='{range .spec.ports[0]}{.nodePort}') ; \
+	gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
+  		--allow=tcp:$${NODE_PORT} \
+  		--network kubernetes-the-hard-way ; \
+	EXTERNAL_IP=$$(gcloud compute instances describe worker-0 \
+		--format 'value(networkInterfaces[0].accessConfigs[0].natIP)') ; \
+	curl -I http://$${EXTERNAL_IP}:$${NODE_PORT}
