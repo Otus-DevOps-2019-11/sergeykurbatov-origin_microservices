@@ -35,6 +35,7 @@ branches:
   - monitoring-1
   - monitoring-2
   - logging-1
+  - kubernetes-1
 
 notifications:
   slack:

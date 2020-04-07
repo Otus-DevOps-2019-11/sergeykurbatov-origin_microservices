@@ -166,3 +166,15 @@ Dockerhub repository with alertmanager service for alerting about incendent with
 - Web интерфейс kibana - http://<docke-host_ip>:5601
 - Web интерфейс zipkin - http://<docke-host_ip>:9411
 - Web интерфейс elasticsearch - http://<docke-host_ip>:9200
+
+# Homework 19
+
+Создана и настроена инфраструктура согласно Kubernetes The Hard Way.
+Создан Makefile для быстрого развертывания или удаления Kubernetes The Hard Way.
+Сделаны smoketest'ы.
+Удалена инфраструктура.
+
+Для запуска инфраструктуры без применения настроек, выполните `cd kubernetes/the_hard_way/ && make run_kub`
+Для удаления инфрастуктуры, выполните `cd kubernetes/the_hard_way/ && make delete_kub`
+
+Для проверки работоспособности, выполните `cd kubernetes/the_hard_way/ && make phase13`
