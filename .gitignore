@@ -8,3 +8,5 @@ packer/variables.json
 jdauphant.nginx
 vault.key
 .env
+*.png
+*.tfvars
