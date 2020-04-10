@@ -178,3 +178,23 @@ Dockerhub repository with alertmanager service for alerting about incendent with
 Для удаления инфрастуктуры, выполните `cd kubernetes/the_hard_way/ && make delete_kub`
 
 Для проверки работоспособности, выполните `cd kubernetes/the_hard_way/ && make phase13`
+
+# Homework 20
+
+Установлен Minikube с использованием Virtualbox.
+Созданы манифесты по запуску приложения в Minikube с использованием контейниризации.
+Созданы сервис манифесты для создания взаимодействия между контейнерами в среде Kubernetes.
+Развернут Kubernetes Dashboard и произведено ознакомление с его возможностями.
+Развернут Kubernetes в среде Google cloud.
+Развернуто приложение с использованием средств GKE.
+Создано инфрструктура создания кластера Kubernetes в GKE с использованием Terraform.
+
+Для запуска kubernetes кластера в GKE, выполните 
+```
+cd ./kubernetes/terraform/ && terraform init
+terraform apply
+kubectl apply -f ../reddit/dev-namespace.yml
+kubectl apply -f ../reddit/ -n dev
+```
+
+Для проверки работоспособности, выполните `kubectl get nodes -o wide` и `kubectl describe service ui  -n dev  | grep NodePort`. Выполните подключение к одному из внешних IP кластера Kubernetes с использование NodePort из выдачии последней команды.

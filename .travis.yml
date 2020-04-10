@@ -36,7 +36,8 @@ branches:
   - monitoring-2
   - logging-1
   - kubernetes-1
-
+  - kubernetes-2
+  
 notifications:
   slack:
     rooms:
