@@ -38,6 +38,7 @@ branches:
   - kubernetes-1
   - kubernetes-2
   - kubernetes-3
+  - kubernetes-4
   
 notifications:
   slack:

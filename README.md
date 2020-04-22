@@ -1,7 +1,7 @@
 # sergeykurbatov-origin_microservices
 sergeykurbatov-origin microservices repository
 
-#### Homework 12
+### Homework 12
 Создан `Dockerfile` с настройками запуска контейнера с установленным и запущенным приложением web сервиса.
 Контейнер импортирован в Docker hub.
 Создана инфраструктура с динамическим окружение для запуска контейнерезированного приложения web сервиса в GCP.
@@ -13,7 +13,7 @@ sergeykurbatov-origin microservices repository
 `terraform apply -var-file=terraform.tfvars.example`
 Для запуска ansible установки и запуска контейнера выполните - `cd docker-monolith/infra/ansible && ansible-playbook playbooks/site.yml`
 
-#### Homework 13
+### Homework 13
 Созданы 3 `Dockerfile` для разных приложений (Post, Comment, UI)
 Собраны 3 образа для разных приложений (Post, Comment, UI)
 Создана единая сеть для работы приложений на контейнерах `reddit`
@@ -40,7 +40,7 @@ docker run -d --network=reddit --network-alias=comment sfrost1988/comment:3.0
 docker run -d --network=reddit -p 9292:9292 sfrost1988/ui:3.0
 ```
 
-#### Homework 14
+### Homework 14
 
 Базовое имя проекта берется из имени папки в которой расположен проект. Его можно переопределить ключем `--project-name <name>`
 Проведена работа с сетями контейнеров, разбиение контейнеров по разным сетям и подключение контейнеров к существующим сетям.
@@ -61,7 +61,7 @@ docker run -d --network=front_net -p 9292:9292 --name ui sfrost1988/ui:3.0
 Для запуска через docker-compose без выполнения сборки образов + подключение `volumes` выполните - `cd src/ && docker-compose -f docker-compose.override.yml --project-name sfrost up -d`
 Для выключения выполните команду - `cd src/ && docker-compose -f docker-compose.override.yml --project-name sfrost down`
 
-#### Homework 15
+### Homework 15
 
 Slack channel для проверки оповещений - https://app.slack.com/client/T6HR0TUP3/CRVKNU9DL
 Установлен Gitlab сервер в контейнере.
@@ -74,7 +74,7 @@ Slack channel для проверки оповещений - https://app.slack.c
 
 Для запуска gitlab выполните `cd gitlab-ci && docker-compose up -d`
 
-#### Homework 16
+### Homework 16
 
 Dockerhub repository with PUMA UI - https://hub.docker.com/repository/docker/sfrost1988/ui
 Dockerhub repository with PUMA POST - https://hub.docker.com/repository/docker/sfrost1988/post
@@ -98,7 +98,7 @@ Dockerhub repository with google cloudprober service for blackbox monitoring - h
 Для вывода ip-адреса docker-host, выполните: `make docker-ip`
 Для вывода справки по командам, выполните: `make` или `make help`
 
-#### Homework 17
+### Homework 17
 
 Dockerhub repository with PUMA UI - https://hub.docker.com/repository/docker/sfrost1988/ui
 Dockerhub repository with PUMA POST - https://hub.docker.com/repository/docker/sfrost1988/post
@@ -138,7 +138,7 @@ Dockerhub repository with alertmanager service for alerting about incendent with
 - Web интерфейс Grafana - http://<docke-host_ip>:3000
 - Web интерфейс Alermanager - http://<docke-host_ip>:9093
 
-#### Homework 18
+### Homework 18
 
 Установлен код измененного приложения.
 Создан и настроен контейнер fluentd для сбора лог сообщений и пересылки их в контейнер с Elasticsearch.
@@ -167,7 +167,7 @@ Dockerhub repository with alertmanager service for alerting about incendent with
 - Web интерфейс zipkin - http://<docke-host_ip>:9411
 - Web интерфейс elasticsearch - http://<docke-host_ip>:9200
 
-#### Homework 19
+### Homework 19
 
 Создана и настроена инфраструктура согласно Kubernetes The Hard Way.
 Создан Makefile для быстрого развертывания или удаления Kubernetes The Hard Way.
@@ -179,7 +179,7 @@ Dockerhub repository with alertmanager service for alerting about incendent with
 
 Для проверки работоспособности, выполните `cd kubernetes/the_hard_way/ && make phase13`
 
-#### Homework 20
+### Homework 20
 
 Установлен Minikube с использованием Virtualbox.
 Созданы манифесты по запуску приложения в Minikube с использованием контейниризации.
@@ -199,7 +199,7 @@ kubectl apply -f ../reddit/ -n dev
 
 Для проверки работоспособности, выполните `kubectl get nodes -o wide` и `kubectl describe service ui  -n dev  | grep NodePort`. Выполните подключение к одному из внешних IP кластера Kubernetes с использование NodePort из выдачии последней команды.
 
-# Homework 21
+### Homework 21
 
 Создан LoadBalancer в GCE для балансирования и проксирования трафика.
 Создан Ingress для UI приложения и настроено взаимодействие по tcp/80.
@@ -215,5 +215,23 @@ terraform apply
 kubectl apply -f ../reddit/
 kubectl apply -f ../reddit/ -n dev
 ```
+
+Для проверки работоспособности, выполните `kubectl get ingress`. Выполните подключение к внешнему IP Ingress контроллера с использование https.
+
+# Homework 22
+
+Установлен helm версии 3, так как это актуальная версия на данный момент.
+Создан манифест Tiller и применен к инфраструктуре kubernetes (хотя для helm 3 он не нужен).
+Попытка инициализации тиллера (безуспешно, потому как он не актуален).
+Созданы Chart'ы для компонентов приложения.
+Проинсталлировано приложение и все его компоненты с использованием helm.
+Настроено взаимодействие между компонентами через общий Chart.
+Установлен gitlab с omnibus с помощью Helm. (нужно не забывать ставить галочку про устаревшие права в GCE).
+Созданы проекты `UI`, `Comment` и `Post` для создания через pipeline gitlab контейнеров этих приложний и заливка их в dockerhub.
+Создан центральный проект `reddit-deploy` для автоматического развертывания инфраструктуры в разных environment'ах. 
+Для каждого приложения создан свой `.gitlab-ci.yml` конфиг для разных pipeline.
+Модернизированы `.gitlab-ci.yml` конфиги всех приложений для развертывания с разных версий helm.
+
+Для запуска приложения выполните ```helm install gitlab kubernetes/Charts/gitlab-omnibus/ -f kubernetes/Charts/gitlab-omnibus/values.yaml``` и заливайте и играйтесь с разными приложениями, их pipeline и тд.
 
 Для проверки работоспособности, выполните `kubectl get ingress`. Выполните подключение к внешнему IP Ingress контроллера с использование https.
