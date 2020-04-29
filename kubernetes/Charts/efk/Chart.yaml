@@ -1,0 +1,7 @@
+name: efk
+version: 1.0.0
+description: EFK stack
+maintainers:
+  - name: Sergey Kurbatov
+    email: kurbatov.sergs@gmail.com
+appVersion: 1.0

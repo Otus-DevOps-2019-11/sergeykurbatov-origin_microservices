@@ -218,7 +218,7 @@ kubectl apply -f ../reddit/ -n dev
 
 Для проверки работоспособности, выполните `kubectl get ingress`. Выполните подключение к внешнему IP Ingress контроллера с использование https.
 
-# Homework 22
+### Homework 22
 
 Установлен helm версии 3, так как это актуальная версия на данный момент.
 Создан манифест Tiller и применен к инфраструктуре kubernetes (хотя для helm 3 он не нужен).
@@ -235,3 +235,17 @@ kubectl apply -f ../reddit/ -n dev
 Для запуска приложения выполните ```helm install gitlab kubernetes/Charts/gitlab-omnibus/ -f kubernetes/Charts/gitlab-omnibus/values.yaml``` и заливайте и играйтесь с разными приложениями, их pipeline и тд.
 
 Для проверки работоспособности, выполните `kubectl get ingress`. Выполните подключение к внешнему IP Ingress контроллера с использование https.
+
+# Homework 23
+
+Установлен Prometheus с помощью helm chart'а.
+Настроены сборки метрик с приложений для Prometheus.
+Установлена Grafana.
+Настроены графики для различных пространств и разверток с использованием variables (dashboard'ы приведены в kubernetes/Grafana_dashboard).
+Установлен Elasticksearch с Kibana.
+
+Для запуска prometheus с помощью созданного helm chart'а, выполните - `helm upgrade prom kubernetes/Charts/prometheus/ -f kubernetes/Charts/prometheus/custom_values.yml --install`
+
+Для запуска grafana с помощью созданного helm chart'а, выполните - `helm upgrade grafana kubernetes/Charts/grafana/ -f kubernetes/Charts/grafana/custom_values.yaml --install`. Для получения пароля от пользователя admin, выполните - `kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo`
+
+Для запуска elasticsearch и kibana c помощью созданного helm chart'а, выполните - `helm upgrade kibana kubernetes/Charts/efk -f kubernetes/Charts/efk/values.yaml --install`
